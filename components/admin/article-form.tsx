@@ -134,9 +134,10 @@ export function ArticleForm({ article }: ArticleFormProps) {
                     )}
                   </div>
                   <Separator />
-                  <ReactMarkdown className="prose prose-sm max-w-none dark:prose-invert">
+                  <div className="prose prose-sm max-w-none dark:prose-invert">
+                  <ReactMarkdown >
                     {formData.content}
-                  </ReactMarkdown>
+                  </ReactMarkdown></div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
