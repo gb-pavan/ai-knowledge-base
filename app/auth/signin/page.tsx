@@ -92,7 +92,7 @@ export default function SignInPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="user@example.com"
                 value={formData.email}
                 onChange={(e) =>
                   setFormData(prev => ({ ...prev, email: e.target.value }))
@@ -107,7 +107,7 @@ export default function SignInPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="user123"
                 value={formData.password}
                 onChange={(e) =>
                   setFormData(prev => ({ ...prev, password: e.target.value }))
