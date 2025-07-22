@@ -40,6 +40,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('Submitting article form...');
     e.preventDefault();
     if (!formData.title.trim() || !formData.content.trim()) {
       toast.error('Please fill in all required fields');
@@ -48,23 +49,38 @@ export function ArticleForm({ article }: ArticleFormProps) {
 
     setIsLoading(true);
     try {
+      console.log('Form data:', formData);
       const url = article ? `/api/articles/${article._id}` : '/api/articles';
       const method = article ? 'PUT' : 'POST';
+
+      // Send all fields, including AI data if present
+      const payload = {
+        ...formData,
+        summary: aiData.summary,
+        tags: aiData.tags,
+      };
+
+      console.log('Payload:', payload);
+      console.log("Sending request to:", url,method);
 
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
+      console.log('Response status:', response);
+
       if (!response.ok) {
-        throw new Error('Failed to save article');
+        const errorText = await response.text();
+        toast.error(`Failed to save article: ${errorText}`);
+        throw new Error(errorText);
       }
 
       const data = await response.json();
-      
+
       // If it's a new article, fetch the updated data to get AI-generated content
       if (!article && data.articleId) {
         const articleResponse = await fetch(`/api/articles/${data.articleId}`);
@@ -76,14 +92,23 @@ export function ArticleForm({ article }: ArticleFormProps) {
           });
         }
       }
+      console.log('Article saved successfully:', article);
 
       toast.success(article ? 'Article updated successfully' : 'Article created successfully');
-      
-      if (!article) {
-        router.push('/admin/articles');
+
+      // if (!article) {
+      //   router.push('/admin/articles');
+      // }
+    } catch (error: any) {
+      let errorMsg = '';
+      if (typeof error?.message === 'string' && error.message.includes('Internal server error')) {
+        errorMsg = 'Something went wrong on the server. Please try again later.';
+      } else if (typeof error?.message === 'string') {
+        errorMsg = error.message;
+      } else {
+        errorMsg = 'Unknown error';
       }
-    } catch (error) {
-      toast.error('Failed to save article');
+      toast.error(`Failed to save article: ${errorMsg}`);
       console.error('Save error:', error);
     } finally {
       setIsLoading(false);

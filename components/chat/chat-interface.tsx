@@ -145,6 +145,7 @@ export function ChatInterface() {
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
+    console.log('Sending message:', inputValue);
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -169,11 +170,14 @@ export function ChatInterface() {
         }),
       });
 
+      console.log('Response from AI:', response);
+
       if (!response.ok) {
         throw new Error('Failed to get response');
       }
 
       const data = await response.json();
+      console.log('AI response data:', data);
 
       const botMessage: Message = {
         id: data.messageId,
